@@ -20,15 +20,15 @@ class ArbitrageBot:
         orig_ratio = ratio = orig_prices[btc] / orig_prices[eth]
         Ex.buy(btc, eur=stake, price=orig_prices[btc])
         Ex.buy(eth, eur=stake, price=orig_prices[eth])
-        step_sizes = { btc: Ex.balances[btc].coins / k, eth: Ex.balances[eth].coins / k }
+        step_sizes = { btc: Ex.balances[btc] / k, eth: Ex.balances[eth] / k }
 
         for i,r in enumerate(data):
             change and verbose and \
                 print("{} | {} | Ratio {:.2f} Change {:.1f}%\t| Positions BTC:{:.5f} ETH:{:.5f} EUR:{:.1f}\t| {:.2f} {:.2f}".format( \
                     r['date'], change, ratio, movement, \
-                    Ex.balances[btc].coins, \
-                    Ex.balances[eth].coins, \
-                    Ex.balances['eur'].coins, \
+                    Ex.balances[btc], \
+                    Ex.balances[eth], \
+                    Ex.balances['eur'], \
                     Ex.balance(r), \
                     r[btc] \
                 ), flush=True)
