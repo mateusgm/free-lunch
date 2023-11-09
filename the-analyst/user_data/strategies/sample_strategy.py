@@ -14,7 +14,7 @@ from freqtrade.strategy import (BooleanParameter, CategoricalParameter, DecimalP
 # Add your lib to import here
 import talib.abstract as ta
 import freqtrade.vendor.qtpylib.indicators as qtpylib
-
+import logging
 
 # This class is a sample. Feel free to customize it.
 class SampleStrategy(IStrategy):
@@ -60,7 +60,7 @@ class SampleStrategy(IStrategy):
     # trailing_stop_positive_offset = 0.0  # Disabled / not configured
 
     # Optimal timeframe for the strategy.
-    timeframe = '5m'
+    timeframe = '1m'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = True
@@ -71,7 +71,7 @@ class SampleStrategy(IStrategy):
     ignore_roi_if_entry_signal = False
 
     # Hyperoptable parameters
-    buy_rsi = IntParameter(low=1, high=50, default=30, space='buy', optimize=True, load=True)
+    buy_rsi = IntParameter(low=1, high=50, default=49, space='buy', optimize=True, load=True)
     sell_rsi = IntParameter(low=50, high=100, default=70, space='sell', optimize=True, load=True)
     short_rsi = IntParameter(low=51, high=100, default=70, space='sell', optimize=True, load=True)
     exit_short_rsi = IntParameter(low=1, high=50, default=30, space='buy', optimize=True, load=True)
@@ -340,7 +340,7 @@ class SampleStrategy(IStrategy):
                 dataframe['best_bid'] = ob['bids'][0][0]
                 dataframe['best_ask'] = ob['asks'][0][0]
         """
-
+        logging.info("generated")
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -370,6 +370,9 @@ class SampleStrategy(IStrategy):
             ),
             'enter_short'] = 1
 
+        cols =  ['date','rsi','bb_middleband','tema','volume', 'enter_long']
+        logging.info("\n %s",dataframe[cols].tail().to_string())
+    
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
