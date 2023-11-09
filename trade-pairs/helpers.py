@@ -26,12 +26,12 @@ class Exchange:
 
     def sell(instr, vol, prices):
         return Exchange.update(instr, -vol, prices[instr], fee=Exchange.MAKER_FEE)
-    
-    def update(instr, vol, price, fee=0):
-        if vol + Exchange.balances[instr].market_value(price) < 0:
+   
+    def update(instr, vol, price, fee=0, force=False):
+        if vol + Exchange.balances[instr].market_value(price) < 0 and not force:
             return False
         Exchange.balances[instr].move(vol, price)
-        Exchange.balances['eur'].move(-abs(vol)*fee, 1)
+        Exchange.balances['fees'].move(-abs(vol)*fee, 1)
         return True
 
     def balance(prices):
