@@ -1,5 +1,7 @@
 from helpers import DataProvider, Exchange
 
+Ex = Exchange(balance=2000)
+
 class ArbitrageBot:
 
     THRESHOLD = 2
@@ -10,40 +12,47 @@ class ArbitrageBot:
 
     def loop(self, data, stake=1000, k=10, verbose=True):
         btc, eth = self.i1, self.i2
-        steps = 0
+        steps = movement = 0
         results = []
+        change = 'BEGN'
 
         orig_prices = next(data)
-        orig_ratio = orig_prices[btc] / orig_prices[eth]
-        Exchange.buy(btc, vol=stake, prices=orig_prices)
-        Exchange.buy(eth, vol=stake, prices=orig_prices)
-        verbose and print("Start | Ratio {:.2f} | Balance ETH 1000 BTC 1000".format(orig_ratio))
+        orig_ratio = ratio = orig_prices[btc] / orig_prices[eth]
+        Ex.buy(btc, eur=stake, price=orig_prices[btc])
+        Ex.buy(eth, eur=stake, price=orig_prices[eth])
+        step_sizes = { btc: Ex.balances[btc].coins / k, eth: Ex.balances[eth].coins / k }
 
         for i,r in enumerate(data):
+            change and verbose and \
+                print("{} | {} | Ratio {:.2f} Change {:.1f}%\t| Positions BTC:{:.5f} ETH:{:.5f} EUR:{:.1f}\t| {:.2f} {:.2f}".format( \
+                    r['date'], change, ratio, movement, \
+                    Ex.balances[btc].coins, \
+                    Ex.balances[eth].coins, \
+                    Ex.balances['eur'].coins, \
+                    Ex.balance(r), \
+                    r[btc] \
+                ), flush=True)
+
             ratio = r[btc] / r[eth]
             movement = 100*ratio/orig_ratio - 100
+            change = False
            
             if movement >= (steps+1)*self.THRESHOLD:
-                if Exchange.sell(btc, vol=stake/k, prices=r):
-                    Exchange.buy(eth, vol=stake/k, prices=r)
+                if Ex.sell(btc, step_sizes[btc], price=r[btc]):
+                    Ex.buy(eth, step_sizes[eth], price=r[eth])
                     steps += 1
-                    verbose and print("{} | Ratio {:.2f} Change {:.1f}% | Sell: 100@BTC Buy: 100@ETH | Positions {:.1f}@BTC {:.1f}@ETH".format( r['date'], ratio, movement, Exchange.balances[btc].market_value(r[btc]), Exchange.balances[eth].market_value(r[eth]) ), flush=True)
+                    change = 'SHRT'
 
             if movement <= (steps-1)*self.THRESHOLD:
-                if Exchange.sell(eth, vol=stake/k, prices=r):
-                    Exchange.buy(btc, vol=stake/k, prices=r)
+                if Ex.sell(eth, step_sizes[eth], price=r[eth]):
+                    Ex.buy(btc, step_sizes[btc], price=r[btc])
                     steps -= 1
-                    verbose and print("{} | Ratio {:.2f} Change {:.1f}% | Buy: 100@BTC Sell: 100@ETH | Positions {:.1f}@BTC {:.1f}@ETH".format( r['date'], ratio, movement, Exchange.balances[btc].market_value(r[btc]), Exchange.balances[eth].market_value(r[eth]) ), flush=True)
-
-            results.append( Exchange.balance(r) )
-            if i % 10000 == 0:
-                benchmark = sum([ r[i] * stake/orig_prices[i] for i in [btc, eth] ])
-                not verbose and print("{}\t{:.2f}\t{:.2f}\t{}".format(r['date'], results[-1], benchmark, steps), flush=True, sep="\t")
+                    change = 'LONG'
         
-        print(Exchange.balances)
+        print(Ex.balances)
 
 if __name__ == '__main__':
+    data = DataProvider().stream('data.csv') #, since='2023-10-23 22:41:08')
     bot = ArbitrageBot( 'BTC/USD', 'ETH/USD' )
-    data = DataProvider()
-    bot.loop(data.stream('data.csv'))
+    bot.loop(data)
 
