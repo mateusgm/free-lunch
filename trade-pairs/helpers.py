@@ -5,7 +5,7 @@ from collections import defaultdict
 import pandas as pd
 
 class Exchange:
-    TAKER_FEE = 0.26 / 100
+    TAKER_FEE = 0.25 / 100
     MAKER_FEE = 0.15 / 100
 
     def __init__(self, balance):
@@ -30,6 +30,7 @@ class Exchange:
         self.balances[instr] += coins
         self.balances['eur'] += -coins*price
         self.balances['eur'] += -abs(coins*price)*fee
+        # print(instr, round(-coins*price,1), round(-abs(coins*price)*fee,2))
         return True
 
 class DataProvider:

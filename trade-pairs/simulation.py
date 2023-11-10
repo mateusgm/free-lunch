@@ -1,3 +1,4 @@
+import sys
 from helpers import DataProvider, Exchange
 
 Ex = Exchange(balance=2000)
@@ -10,7 +11,7 @@ class ArbitrageBot:
         self.i1 = instr1
         self.i2 = instr2
 
-    def loop(self, data, stake=1000, k=10, verbose=True):
+    def loop(self, data, stake=1000, k=5, verbose=True):
         btc, eth = self.i1, self.i2
         steps = movement = 0
         results = []
@@ -52,7 +53,8 @@ class ArbitrageBot:
         print(Ex.balances)
 
 if __name__ == '__main__':
-    data = DataProvider().stream('data.csv') #, since='2023-10-23 22:41:08')
+    since = sys.argv[1] if len(sys.argv) > 1 else '2001-01-01'
+    data = DataProvider().stream('data.csv', since=since)
     bot = ArbitrageBot( 'BTC/USD', 'ETH/USD' )
     bot.loop(data)
 
