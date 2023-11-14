@@ -160,6 +160,7 @@ cython_debug/
 #.idea/
 *.csv
 freqtrade/
-config-keys.json
+models/
+keys.json
 *.feather
 *.sqlite*

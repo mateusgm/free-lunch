@@ -70,6 +70,6 @@
         "process_throttle_secs": 5
     },
     "add_config_files": [
-        "config-keys.json",
+        "keys.json",
     ],
 }

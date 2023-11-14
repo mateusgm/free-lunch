@@ -1,0 +1,6 @@
+{
+    "strategy_path": "sample/",
+    "add_config_files": [
+        "../config/base.json",
+    ]
+}
