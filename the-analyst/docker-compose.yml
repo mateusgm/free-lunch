@@ -1,8 +1,13 @@
 ---
 version: '3'
 services:
+  #shell:
+    #image: freqtradeorg/freqtrade:stable
+    #stdin_open: true # docker run -i
+    #tty: true        # docker run -t
+
   freqtrade:
-    image: freqtradeorg/freqtrade:stable
+    image: freqtradeorg/freqtrade:stable_freqai
     # image: freqtradeorg/freqtrade:develop
     # Use plotting image
     # image: freqtradeorg/freqtrade:develop_plot
@@ -22,6 +27,7 @@ services:
     restart: unless-stopped
     container_name: freqtrade
     volumes:
+      - "./model-v1:/freqtrade/model-v1"
       - "./user_data:/freqtrade/user_data"
     # Expose api on port 8080 (localhost only)
     # Please read the https://www.freqtrade.io/en/stable/rest-api/ documentation
@@ -32,6 +38,6 @@ services:
     command: >
       trade
       --logfile /freqtrade/user_data/logs/freqtrade.log
-      --db-url sqlite:////freqtrade/user_data/tradesv3.sqlite
+      --db-url sqlite:////freqtrade/user_data/db/tradesv3.sqlite
       --config /freqtrade/user_data/config.json
       --strategy SampleStrategy
