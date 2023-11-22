@@ -26,7 +26,7 @@ class FreqaiExampleStrategy(IStrategy):
     This means this is *not* meant to be run live in production.
     """
 
-    minimal_roi = {"0": 0.1, "240": -1}
+    minimal_roi = {"0": 0.02, "240": -1}
 
     plot_config = {
         "main_plot": {},

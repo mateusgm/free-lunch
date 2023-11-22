@@ -19,8 +19,6 @@ services:
     # build:
     #   context: .
     #   dockerfile: "./docker/Dockerfile.custom"
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
     restart: unless-stopped
     container_name: freqtrade
     volumes:

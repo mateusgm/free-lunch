@@ -1,6 +1,6 @@
 {
     "add_config_files": [
-        "../config-base.json",
+        "../config/base.json",
     ],
     "strategy_path": "model-v1/",
     "timeframe": "5m",
